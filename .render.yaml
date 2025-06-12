@@ -2,6 +2,7 @@ services:
   - type: web
     name: InnerGlow
     env: python
+    pythonVersion: 3.10
     branch: main
     buildCommand: pip install -r requirements.txt
     startCommand: python app.py
