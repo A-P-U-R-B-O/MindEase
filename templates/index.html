@@ -5,13 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MindEase — AI Mental Wellness Companion</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f7fc;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #3e8ed0;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 15px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #3e8ed0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #a0c4ec;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .response-container {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #eaf3ff;
+      border-left: 5px solid #3e8ed0;
+      border-radius: 8px;
+    }
+
+    .response-text {
+      font-size: 1.1rem;
+      white-space: pre-wrap;
+    }
+
+    #loading {
+      margin-top: 10px;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>MindEase</h1>
     <p class="subtitle">Your AI Mental Wellness Companion</p>
     
-    <form method="POST" id="prompt-form">
+    <form id="prompt-form">
       <label for="prompt" class="label">What's on your mind?</label>
       <textarea
         id="prompt"
@@ -19,28 +99,52 @@
         rows="5"
         placeholder="Type your feelings or worries here..."
         required
-      >{{ prompt }}</textarea>
+      ></textarea>
       
       <button type="submit" id="submit-btn">Get Support</button>
       <div id="loading" class="hidden">⏳ Thinking...</div>
     </form>
     
-    {% if response %}
-      <div class="response-container">
-        <h2>AI Response:</h2>
-        <p class="response-text">{{ response }}</p>
-      </div>
-    {% endif %}
+    <div class="response-container hidden" id="response-container">
+      <h2>AI Response:</h2>
+      <p class="response-text" id="response-text"></p>
+    </div>
   </div>
 
   <script>
     const form = document.getElementById('prompt-form');
     const submitBtn = document.getElementById('submit-btn');
     const loading = document.getElementById('loading');
+    const responseContainer = document.getElementById('response-container');
+    const responseText = document.getElementById('response-text');
 
-    form.addEventListener('submit', () => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
       submitBtn.disabled = true;
       loading.classList.remove('hidden');
+      responseContainer.classList.add('hidden');
+
+      const prompt = document.getElementById('prompt').value;
+
+      try {
+        const res = await fetch('/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message: prompt })
+        });
+
+        const data = await res.json();
+        responseText.textContent = data.reply;
+        responseContainer.classList.remove('hidden');
+      } catch (err) {
+        responseText.textContent = "Something went wrong. Please try again later.";
+        responseContainer.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        loading.classList.add('hidden');
+      }
     });
   </script>
 </body>
