@@ -10,7 +10,6 @@ ENV/
 
 # Environment variable files
 .env
-groq.env
 
 # OS-specific files
 .DS_Store  # macOS
