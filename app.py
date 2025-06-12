@@ -1,23 +1,60 @@
-from flask import Flask, request, render_template
-from ai.groq_client import get_ai_response
 import os
+import requests
+from flask import Flask, request, jsonify, render_template, session, redirect, url_for
+from flask_session import Session
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    ai_reply = ""
-    user_prompt = ""
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+MODEL = "llama3-70b-8192"
 
-    if request.method == "POST":
-        user_prompt = request.form.get("prompt", "").strip()
-        if user_prompt:
-            try:
-                ai_reply = get_ai_response(user_prompt)
-            except Exception as e:
-                ai_reply = "Sorry, I couldn't process that. You're not alone — please try again or check back later."
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-    return render_template("index.html", response=ai_reply, prompt=user_prompt)
+@app.route("/chat", methods=["POST"])
+def chat():
+    user_input = request.json.get("message", "")
+    if "chat_history" not in session:
+        session["chat_history"] = []
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    session["chat_history"].append({"role": "user", "content": user_input})
+
+    full_convo = [{"role": "system", "content": "You are a kind, supportive AI assistant helping people manage anxiety, stress, and depression. Always respond with empathy, encouragement, and practical advice. Do not provide medical diagnoses."."}]
+    full_convo.extend(session["chat_history"])
+
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "model": MODEL,
+        "messages": full_convo[-10:],
+        "temperature": 0.8
+    }
+
+    try:
+        response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=data)
+        if response.status_code == 200:
+            reply = response.json()["choices"][0]["message"]["content"]
+            session["chat_history"].append({"role": "assistant", "content": reply})
+            return jsonify({"reply": reply})
+        else:
+            print("Groq error:", response.status_code, response.text)
+            return jsonify({"reply": "Oops! Something went wrong on the server."})
+    except Exception as e:
+        print("Server crash:", e)
+        return jsonify({"reply": "Unexpected server error occurred."})
+
+@app.route("/reset", methods=["POST"])
+def reset():
+    session.pop("chat_history", None)
+    return jsonify({"reply": "Memory wiped. Fresh start!"})
+
+if __name__ == "__app__":
+    app.run(host="0.0.0.0", port=81)
