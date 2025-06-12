@@ -1,1 +1,33 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment folders
+venv/
+env/
+ENV/
+
+# Environment variable files
 .env
+groq.env
+
+# OS-specific files
+.DS_Store  # macOS
+Thumbs.db  # Windows
+
+# Editor/IDE settings
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Flask debug files
+instance/
+*.sqlite3
+
+# Pytest & coverage
+.pytest_cache/
+.coverage
+htmlcov/
