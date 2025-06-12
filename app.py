@@ -8,15 +8,15 @@ app = Flask(__name__)
 def index():
     ai_reply = ""
     user_prompt = ""
-    
+
     if request.method == "POST":
-        user_prompt = request.form.get("prompt", "")
-        if user_prompt.strip():
+        user_prompt = request.form.get("prompt", "").strip()
+        if user_prompt:
             try:
                 ai_reply = get_ai_response(user_prompt)
             except Exception as e:
-                ai_reply = f"Something went wrong: {str(e)}"
-    
+                ai_reply = "Sorry, I couldn't process that. You're not alone — please try again or check back later."
+
     return render_template("index.html", response=ai_reply, prompt=user_prompt)
 
 if __name__ == "__main__":
