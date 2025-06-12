@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MindEase — AI Mental Wellness Companion</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <h1>MindEase</h1>
+    <p class="subtitle">Your AI Mental Wellness Companion</p>
+    
+    <form method="POST" id="prompt-form">
+      <label for="prompt" class="label">What's on your mind?</label>
+      <textarea
+        id="prompt"
+        name="prompt"
+        rows="5"
+        placeholder="Type your feelings or worries here..."
+        required
+      >{{ prompt }}</textarea>
+      
+      <button type="submit" id="submit-btn">Get Support</button>
+      <div id="loading" class="hidden">⏳ Thinking...</div>
+    </form>
+    
+    {% if response %}
+      <div class="response-container">
+        <h2>AI Response:</h2>
+        <p class="response-text">{{ response }}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    const form = document.getElementById('prompt-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const loading = document.getElementById('loading');
+
+    form.addEventListener('submit', () => {
+      submitBtn.disabled = true;
+      loading.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
