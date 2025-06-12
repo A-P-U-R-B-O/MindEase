@@ -56,5 +56,5 @@ def reset():
     session.pop("chat_history", None)
     return jsonify({"reply": "Memory wiped. Fresh start!"})
 
-if __name__ == "__app__":
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=81)
