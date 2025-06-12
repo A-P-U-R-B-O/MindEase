@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: mental-wellness-ai
+    name: InnerGlow
     env: python
     branch: main
     buildCommand: pip install -r requirements.txt
