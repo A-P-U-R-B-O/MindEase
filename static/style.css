@@ -1,0 +1,128 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #fff;
+}
+
+.container {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  max-width: 600px;
+  width: 100%;
+  backdrop-filter: blur(10px);
+}
+
+h1 {
+  font-size: 2.8rem;
+  margin-bottom: 5px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.subtitle {
+  text-align: center;
+  font-weight: 300;
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+  color: #dcdde1;
+}
+
+.label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  padding: 15px;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 120px;
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+textarea::placeholder {
+  color: #dcdde1;
+}
+
+textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 8px #9b59b6;
+}
+
+button {
+  margin-top: 15px;
+  width: 100%;
+  background: #9b59b6;
+  border: none;
+  color: white;
+  padding: 15px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+button:disabled {
+  background: #6f42c1;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: #8e44ad;
+}
+
+#loading {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #f39c12;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.response-container {
+  margin-top: 30px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  border-radius: 10px;
+  color: #f0f0f0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+.response-container h2 {
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.response-text {
+  white-space: pre-wrap; /* preserves line breaks */
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
