@@ -1,152 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MindEase — AI Mental Wellness Companion</title> taken from this 
-  
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DB9B4R20J"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-0DB9B4R20J');
-  </script>
-  <!-- End Google Analytics -->
-
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  <style>
-    /* your style block remains untouched */
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f2f7fc;
-      padding: 20px;
-    }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #3e8ed0;
-    }
-    .subtitle {
-      text-align: center;
-      font-size: 1.2rem;
-      color: #555;
-      margin-bottom: 30px;
-    }
-    .label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    textarea {
-      width: 100%;
-      padding: 15px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      resize: vertical;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background-color: #3e8ed0;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    button:disabled {
-      background-color: #a0c4ec;
-    }
-    .hidden {
-      display: none;
-    }
-    .response-container {
-      margin-top: 30px;
-      padding: 20px;
-      background-color: #eaf3ff;
-      border-left: 5px solid #3e8ed0;
-      border-radius: 8px;
-    }
-    .response-text {
-      font-size: 1.1rem;
-      white-space: pre-wrap;
-    }
-    #loading {
-      margin-top: 10px;
-      color: #888;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindEase 💬</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DB9B4R20J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-0DB9B4R20J');
+    </script>
 </head>
 <body>
-  <div class="container">
-    <h1>MindEase</h1>
-    <p class="subtitle">Your AI Mental Wellness Companion</p>
-    
-    <form id="prompt-form">
-      <label for="prompt" class="label">What's on your mind?</label>
-      <textarea
-        id="prompt"
-        name="prompt"
-        rows="5"
-        placeholder="Type your feelings or worries here..."
-        required
-      ></textarea>
-      
-      <button type="submit" id="submit-btn">Get Support</button>
-      <div id="loading" class="hidden">⏳ Thinking...</div>
-    </form>
-    
-    <div class="response-container hidden" id="response-container">
-      <h2>AI Response:</h2>
-      <p class="response-text" id="response-text"></p>
+    <h1>MindEase 💬</h1>
+    <div id="chat-container">
+        <div id="chat-box"></div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Type your thoughts..." autocomplete="off" required>
+            <button type="submit">Send</button>
+        </form>
     </div>
-  </div>
 
-  <script>
-    const form = document.getElementById('prompt-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const loading = document.getElementById('loading');
-    const responseContainer = document.getElementById('response-container');
-    const responseText = document.getElementById('response-text');
+    <script>
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('user-input');
+        const chatBox = document.getElementById('chat-box');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      submitBtn.disabled = true;
-      loading.classList.remove('hidden');
-      responseContainer.classList.add('hidden');
+        function addMessage(text, sender) {
+            const msg = document.createElement('div');
+            msg.className = 'message ' + sender;
+            msg.textContent = text;
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
 
-      const prompt = document.getElementById('prompt').value;
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userText = input.value.trim();
+            if (!userText) return;
 
-      try {
-        const res = await fetch('/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ message: prompt })
+            addMessage(userText, 'user');
+            input.value = '';
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userText })
+                });
+                const data = await res.json();
+                addMessage(data.reply, 'assistant');
+            } catch (error) {
+                addMessage("Something went wrong. Please try again later.", 'assistant');
+            }
         });
-
-        const data = await res.json();
-        responseText.textContent = data.reply;
-        responseContainer.classList.remove('hidden');
-      } catch (err) {
-        responseText.textContent = "Something went wrong. Please try again later.";
-        responseContainer.classList.remove('hidden');
-      } finally {
-        submitBtn.disabled = false;
-        loading.classList.add('hidden');
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
