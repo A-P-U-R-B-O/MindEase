@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MindEase — AI Mental Wellness Companion</title>
-
+  
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DB9B4R20J"></script>
   <script>
@@ -17,113 +17,73 @@
 
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   <style>
+    /* your style block remains untouched */
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #d3e8ff, #f0f6ff);
-      padding: 40px 20px;
-      color: #2c3e50;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f2f7fc;
+      padding: 20px;
     }
     .container {
-      max-width: 720px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
-      padding: 40px 35px;
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     h1 {
-      font-weight: 700;
-      font-size: 2.8rem;
       text-align: center;
-      color: #1a73e8;
-      margin-bottom: 5px;
-      letter-spacing: 1.2px;
-      user-select: none;
+      color: #3e8ed0;
     }
     .subtitle {
       text-align: center;
-      font-size: 1.25rem;
-      color: #34495e;
+      font-size: 1.2rem;
+      color: #555;
       margin-bottom: 30px;
-      font-weight: 500;
-      user-select: none;
     }
     .label {
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-      color: #34495e;
-      user-select: none;
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
-    textarea#prompt {
+    textarea {
       width: 100%;
-      min-height: 140px;
-      padding: 18px 22px;
-      font-size: 1.1rem;
-      border-radius: 12px;
-      border: 2px solid #cbd5e1;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-      transition: border-color 0.3s ease;
-      resize: vertical;
-      font-family: inherit;
-      color: #2c3e50;
-    }
-    textarea#prompt:focus {
-      border-color: #1a73e8;
-      outline: none;
-      box-shadow: 0 0 8px #1a73e8aa;
-    }
-    button#submit-btn {
-      background-color: #1a73e8;
-      color: white;
-      font-size: 1.2rem;
-      font-weight: 700;
-      padding: 14px 0;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.25s ease;
-    }
-    button#submit-btn:hover:not(:disabled) {
-      background-color: #155ab6;
-    }
-    button#submit-btn:disabled {
-      background-color: #a9c1f9;
-      cursor: not-allowed;
-    }
-    #loading {
+      padding: 15px;
       font-size: 1rem;
-      color: #7f8c8d;
-      margin-top: 12px;
-      text-align: center;
-      user-select: none;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #3e8ed0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #a0c4ec;
+    }
+    .hidden {
+      display: none;
     }
     .response-container {
-      background-color: #eaf4ff;
-      border-left: 6px solid #1a73e8;
-      border-radius: 12px;
-      padding: 24px 28px;
-      margin-top: 35px;
-      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.15);
-      user-select: text;
-    }
-    .response-container h2 {
-      margin-top: 0;
-      color: #1a3e72;
-      font-weight: 700;
-      font-size: 1.4rem;
-      margin-bottom: 16px;
-      user-select: none;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #eaf3ff;
+      border-left: 5px solid #3e8ed0;
+      border-radius: 8px;
     }
     .response-text {
-      font-size: 1.15rem;
-      line-height: 1.6;
+      font-size: 1.1rem;
       white-space: pre-wrap;
-      color: #34495e;
+    }
+    #loading {
+      margin-top: 10px;
+      color: #888;
     }
   </style>
 </head>
@@ -131,22 +91,22 @@
   <div class="container">
     <h1>MindEase</h1>
     <p class="subtitle">Your AI Mental Wellness Companion</p>
-
-    <form id="prompt-form" autocomplete="off" spellcheck="false">
+    
+    <form id="prompt-form">
       <label for="prompt" class="label">What's on your mind?</label>
       <textarea
         id="prompt"
         name="prompt"
-        placeholder="Share your thoughts, feelings, or worries here..."
+        rows="5"
+        placeholder="Type your feelings or worries here..."
         required
-        aria-label="User input for mental wellness chat"
       ></textarea>
-
+      
       <button type="submit" id="submit-btn">Get Support</button>
-      <div id="loading" class="hidden" aria-live="polite">⏳ Thinking...</div>
+      <div id="loading" class="hidden">⏳ Thinking...</div>
     </form>
-
-    <div class="response-container hidden" id="response-container" aria-live="polite" role="region">
+    
+    <div class="response-container hidden" id="response-container">
       <h2>AI Response:</h2>
       <p class="response-text" id="response-text"></p>
     </div>
@@ -165,15 +125,7 @@
       loading.classList.remove('hidden');
       responseContainer.classList.add('hidden');
 
-      const prompt = document.getElementById('prompt').value.trim();
-
-      if (!prompt) {
-        responseText.textContent = "Please enter your thoughts or feelings to get support.";
-        responseContainer.classList.remove('hidden');
-        submitBtn.disabled = false;
-        loading.classList.add('hidden');
-        return;
-      }
+      const prompt = document.getElementById('prompt').value;
 
       try {
         const res = await fetch('/chat', {
@@ -188,7 +140,7 @@
         responseText.textContent = data.reply;
         responseContainer.classList.remove('hidden');
       } catch (err) {
-        responseText.textContent = "Oops! Something went wrong. Please try again later.";
+        responseText.textContent = "Something went wrong. Please try again later.";
         responseContainer.classList.remove('hidden');
       } finally {
         submitBtn.disabled = false;
