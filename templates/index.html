@@ -4,14 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MindEase — AI Mental Wellness Companion</title>
+  
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0DB9B4R20J"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0DB9B4R20J');
+  </script>
+  <!-- End Google Analytics -->
+
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   <style>
+    /* your style block remains untouched */
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f2f7fc;
       padding: 20px;
     }
-
     .container {
       max-width: 700px;
       margin: auto;
@@ -20,25 +31,21 @@
       border-radius: 12px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-
     h1 {
       text-align: center;
       color: #3e8ed0;
     }
-
     .subtitle {
       text-align: center;
       font-size: 1.2rem;
       color: #555;
       margin-bottom: 30px;
     }
-
     .label {
       display: block;
       font-weight: bold;
       margin-bottom: 10px;
     }
-
     textarea {
       width: 100%;
       padding: 15px;
@@ -47,7 +54,6 @@
       border: 1px solid #ccc;
       resize: vertical;
     }
-
     button {
       margin-top: 15px;
       padding: 10px 20px;
@@ -58,15 +64,12 @@
       font-size: 1rem;
       cursor: pointer;
     }
-
     button:disabled {
       background-color: #a0c4ec;
     }
-
     .hidden {
       display: none;
     }
-
     .response-container {
       margin-top: 30px;
       padding: 20px;
@@ -74,12 +77,10 @@
       border-left: 5px solid #3e8ed0;
       border-radius: 8px;
     }
-
     .response-text {
       font-size: 1.1rem;
       white-space: pre-wrap;
     }
-
     #loading {
       margin-top: 10px;
       color: #888;
