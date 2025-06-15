@@ -1,6 +1,6 @@
-# InnerGlow — AI Mental Wellness Companion
+# MindEase — AI Mental Wellness Companion
 
-InnerGlow is an AI-powered web application designed to provide supportive conversations to users dealing with anxiety, stress, and depression. It uses the Groq API's LLaMA 3 model to offer empathetic, personalized responses and guidance, helping users reduce their mental suffering.
+MindEase is an AI-powered web application designed to provide supportive conversations to users dealing with anxiety, stress, and depression. It uses the Groq API's LLaMA 3 model to offer empathetic, personalized responses and guidance, helping users reduce their mental suffering.
 
 ---
 
@@ -16,7 +16,7 @@ InnerGlow is an AI-powered web application designed to provide supportive conver
 
 ## Demo
 
-Try the live app at: [Your Render URL here]
+Try the live app at: https://innerglow-mm8e.onrender.com/
 
 ---
 
@@ -43,5 +43,5 @@ Try the live app at: [Your Render URL here]
 1. Clone the repo:
 
 ```bash
-git clone https://github.com/yourusername/innerglow.git
-cd innerglow
+git clone https://github.com/yourusername/mindease.git
+cd mindease
