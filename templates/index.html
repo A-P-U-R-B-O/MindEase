@@ -17,15 +17,31 @@
 </head>
 <body>
     <h1>MindEase 💬</h1>
-    <div id="chat-container">
-        <div id="chat-box"></div>
-        <form id="chat-form">
-            <input type="text" id="user-input" placeholder="Type your thoughts..." autocomplete="off" required>
-            <button type="submit">Send</button>
-        </form>
+    <div id="main-container">
+        <div id="chat-container">
+            <div id="chat-box"></div>
+            <form id="chat-form">
+                <input type="text" id="user-input" placeholder="Type your thoughts..." autocomplete="off" required>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+        <div id="journal-container">
+            <h2>Journal</h2>
+            <form id="journal-form">
+                <input type="text" id="journal-title" placeholder="Title" required>
+                <textarea id="journal-body" placeholder="Write your entry..." required></textarea>
+                <select id="journal-mood" required>
+                    <option value="">Select mood</option>
+                    <!-- Mood options will be filled by JS -->
+                </select>
+                <button type="submit">Add Entry</button>
+            </form>
+            <div id="journal-entries"></div>
+        </div>
     </div>
 
     <script>
+        // Chat logic
         const form = document.getElementById('chat-form');
         const input = document.getElementById('user-input');
         const chatBox = document.getElementById('chat-box');
@@ -58,6 +74,107 @@
                 addMessage("Something went wrong. Please try again later.", 'assistant');
             }
         });
+
+        // Journal logic
+        const journalForm = document.getElementById('journal-form');
+        const journalTitle = document.getElementById('journal-title');
+        const journalBody = document.getElementById('journal-body');
+        const journalMood = document.getElementById('journal-mood');
+        const journalEntries = document.getElementById('journal-entries');
+
+        // Load mood options
+        async function loadMoods() {
+            const res = await fetch('/journal/moods');
+            const data = await res.json();
+            journalMood.innerHTML = '<option value="">Select mood</option>';
+            data.moods.forEach(mood => {
+                const opt = document.createElement('option');
+                opt.value = mood;
+                opt.textContent = mood.charAt(0).toUpperCase() + mood.slice(1);
+                journalMood.appendChild(opt);
+            });
+        }
+
+        // Load all journal entries
+        async function loadJournalEntries() {
+            const res = await fetch('/journal');
+            const data = await res.json();
+            journalEntries.innerHTML = '';
+            if (!data.entries.length) {
+                journalEntries.innerHTML = '<p>No journal entries yet.</p>';
+                return;
+            }
+            data.entries.slice().reverse().forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'journal-entry';
+                div.innerHTML = `
+                    <div>
+                        <strong>${entry.title}</strong> 
+                        <span style="float:right;">${entry.mood} | ${entry.timestamp}</span>
+                    </div>
+                    <div>${entry.body}</div>
+                    <button onclick="editEntry('${entry.id}')">Edit</button>
+                    <button onclick="deleteEntry('${entry.id}')">Delete</button>
+                `;
+                journalEntries.appendChild(div);
+            });
+        }
+
+        // Add new journal entry
+        journalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = journalTitle.value.trim();
+            const body = journalBody.value.trim();
+            const mood = journalMood.value;
+            if (!title || !body || !mood) return;
+            await fetch('/journal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, body, mood })
+            });
+            journalTitle.value = '';
+            journalBody.value = '';
+            journalMood.value = '';
+            loadJournalEntries();
+        });
+
+        // Edit journal entry
+        window.editEntry = async function(id) {
+            const res = await fetch(`/journal/${id}`);
+            const data = await res.json();
+            if (!data.entry) return;
+            journalTitle.value = data.entry.title;
+            journalBody.value = data.entry.body;
+            journalMood.value = data.entry.mood;
+            journalForm.onsubmit = async function(e) {
+                e.preventDefault();
+                await fetch(`/journal/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: journalTitle.value.trim(),
+                        body: journalBody.value.trim(),
+                        mood: journalMood.value
+                    })
+                });
+                journalTitle.value = '';
+                journalBody.value = '';
+                journalMood.value = '';
+                journalForm.onsubmit = journalFormSubmit;
+                loadJournalEntries();
+            };
+        };
+        // Save original submit handler
+        const journalFormSubmit = journalForm.onsubmit;
+
+        // Delete journal entry
+        window.deleteEntry = async function(id) {
+            await fetch(`/journal/${id}`, { method: 'DELETE' });
+            loadJournalEntries();
+        };
+
+        loadMoods();
+        loadJournalEntries();
     </script>
 </body>
 </html>
