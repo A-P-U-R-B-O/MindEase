@@ -22,6 +22,54 @@ h1 {
     font-size: 2rem;
 }
 
+/* Hamburger menu styles */
+#hamburger-menu {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    z-index: 100;
+}
+#hamburger-menu span {
+    display: block;
+    height: 5px;
+    width: 100%;
+    background: #2563eb;
+    border-radius: 2px;
+}
+
+/* Overlay for Journal */
+#journal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(34,43,68,0.24);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+#journal-overlay.active {
+    display: flex;
+}
+#journal-modal {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    padding: 2rem 1rem;
+    width: 90vw;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
 #main-container {
     display: flex;
     flex-direction: row;
@@ -111,19 +159,8 @@ button:hover {
     background-color: #1d4ed8;
 }
 
-#journal-container {
-    background: white;
-    border-radius: 1rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 480px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-#journal-container h2 {
+/* Journal section inside modal */
+#journal-modal h2 {
     color: #2563eb;
     font-size: 1.3rem;
     margin-bottom: 0.5rem;
@@ -183,6 +220,9 @@ button:hover {
         max-width: 480px;
         align-items: stretch;
     }
+    #hamburger-menu {
+        right: 1rem;
+    }
 }
 
 @media (max-width: 500px) {
@@ -195,10 +235,15 @@ button:hover {
     }
 
     #main-container,
-    #chat-container,
-    #journal-container {
+    #chat-container {
         padding: 0.75rem;
         max-width: 100%;
+    }
+
+    #journal-modal {
+        padding: 1rem 0.5rem;
+        width: 98vw;
+        max-width: 98vw;
     }
 
     input[type="text"], textarea, select, button {
@@ -208,5 +253,12 @@ button:hover {
     textarea {
         min-height: 70px;
         font-size: 1rem;
+    }
+
+    #hamburger-menu {
+        top: 1rem;
+        right: 1rem;
+        width: 28px;
+        height: 28px;
     }
     }
