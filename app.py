@@ -3,6 +3,8 @@ import requests
 from flask import Flask, request, jsonify, render_template, session
 from flask_session import Session
 from werkzeug.security import generate_password_hash, check_password_hash  # Optional unless needed
+from datetime import datetime
+import uuid
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -11,6 +13,18 @@ Session(app)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MODEL = "llama3-70b-8192"
+
+# --- Mood options ---
+MOOD_OPTIONS = ["happy", "sad", "stressed", "anxious", "calm", "angry", "excited", "neutral"]
+
+# --- Helper for journal storage ---
+def get_journal():
+    if "journal" not in session:
+        session["journal"] = []
+    return session["journal"]
+
+def save_journal(journal):
+    session["journal"] = journal
 
 @app.route("/")
 def home():
@@ -67,6 +81,96 @@ def chat():
 def reset():
     session.pop("chat_history", None)
     return jsonify({"reply": "Memory wiped 🧽 — let's start fresh!"})
+
+# --- Journal API ---
+
+@app.route("/journal", methods=["GET"])
+def get_all_journal_entries():
+    """
+    Get all journal entries, optionally filter by mood or date.
+    Query params: mood, date (YYYY-MM-DD)
+    """
+    journal = get_journal()
+    mood = request.args.get("mood")
+    date_str = request.args.get("date")
+    results = journal
+    if mood:
+        results = [entry for entry in results if entry.get("mood") == mood]
+    if date_str:
+        results = [entry for entry in results if entry.get("timestamp", "").startswith(date_str)]
+    return jsonify({"entries": results})
+
+@app.route("/journal", methods=["POST"])
+def add_journal_entry():
+    """
+    Add a new journal entry. Expects JSON: title, body, mood
+    """
+    data = request.json
+    title = data.get("title", "").strip()
+    body = data.get("body", "").strip()
+    mood = data.get("mood", "").strip()
+    if not title or not body or mood not in MOOD_OPTIONS:
+        return jsonify({"error": "Missing or invalid title, body, or mood."}), 400
+    entry = {
+        "id": str(uuid.uuid4()),
+        "title": title,
+        "body": body,
+        "mood": mood,
+        "timestamp": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    journal = get_journal()
+    journal.append(entry)
+    save_journal(journal)
+    return jsonify({"entry": entry}), 201
+
+@app.route("/journal/<entry_id>", methods=["GET"])
+def get_journal_entry(entry_id):
+    """
+    Get a single journal entry by ID.
+    """
+    journal = get_journal()
+    for entry in journal:
+        if entry["id"] == entry_id:
+            return jsonify({"entry": entry})
+    return jsonify({"error": "Entry not found."}), 404
+
+@app.route("/journal/<entry_id>", methods=["PUT"])
+def update_journal_entry(entry_id):
+    """
+    Update a journal entry. Expects JSON: title, body, mood
+    """
+    data = request.json
+    title = data.get("title", "").strip()
+    body = data.get("body", "").strip()
+    mood = data.get("mood", "").strip()
+    journal = get_journal()
+    for entry in journal:
+        if entry["id"] == entry_id:
+            if title: entry["title"] = title
+            if body: entry["body"] = body
+            if mood in MOOD_OPTIONS: entry["mood"] = mood
+            save_journal(journal)
+            return jsonify({"entry": entry})
+    return jsonify({"error": "Entry not found."}), 404
+
+@app.route("/journal/<entry_id>", methods=["DELETE"])
+def delete_journal_entry(entry_id):
+    """
+    Delete a journal entry by ID.
+    """
+    journal = get_journal()
+    journal_new = [entry for entry in journal if entry["id"] != entry_id]
+    if len(journal_new) == len(journal):
+        return jsonify({"error": "Entry not found."}), 404
+    save_journal(journal_new)
+    return jsonify({"success": True})
+
+@app.route("/journal/moods", methods=["GET"])
+def get_mood_options():
+    """
+    Get possible mood options.
+    """
+    return jsonify({"moods": MOOD_OPTIONS})
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8080)
