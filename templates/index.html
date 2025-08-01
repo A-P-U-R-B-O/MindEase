@@ -17,6 +17,12 @@
 </head>
 <body>
     <h1>MindEase 💬</h1>
+    <div id="hamburger-menu" title="Open Journal">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
     <div id="main-container">
         <div id="chat-container">
             <div id="chat-box"></div>
@@ -25,7 +31,11 @@
                 <button type="submit">Send</button>
             </form>
         </div>
-        <div id="journal-container">
+    </div>
+
+    <!-- Journal overlay/modal -->
+    <div id="journal-overlay">
+        <div id="journal-modal">
             <h2>Journal</h2>
             <form id="journal-form">
                 <input type="text" id="journal-title" placeholder="Title" required>
@@ -41,6 +51,21 @@
     </div>
 
     <script>
+        // Hamburger Menu
+        const hamburger = document.getElementById('hamburger-menu');
+        const journalOverlay = document.getElementById('journal-overlay');
+
+        hamburger.addEventListener('click', () => {
+            journalOverlay.classList.toggle('active');
+        });
+
+        // Optional: close overlay when clicking outside modal
+        journalOverlay.addEventListener('click', function(e) {
+            if (e.target === journalOverlay) {
+                journalOverlay.classList.remove('active');
+            }
+        });
+
         // Chat logic
         const form = document.getElementById('chat-form');
         const input = document.getElementById('user-input');
