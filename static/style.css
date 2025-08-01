@@ -69,10 +69,15 @@ form {
     display: flex;
     gap: 0.5rem;
     margin-top: auto;
+    flex-wrap: wrap;
 }
 
-input[type="text"], textarea, select {
+/* Ensure chat input fills available space */
+#chat-form input[type="text"] {
     flex: 1;
+}
+
+input[type="text"], select {
     padding: 0.75rem 1rem;
     border-radius: 999px;
     border: 1px solid #d1d5db;
@@ -80,11 +85,16 @@ input[type="text"], textarea, select {
     margin-bottom: 0.5rem;
 }
 
+/* Journal textarea fix - wider and taller */
 textarea {
+    width: 100%;
     border-radius: 1rem;
-    min-height: 72px;
+    min-height: 90px;
     resize: vertical;
     font-family: inherit;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
+    font-size: 1rem;
 }
 
 button {
@@ -194,4 +204,9 @@ button:hover {
     input[type="text"], textarea, select, button {
         font-size: 0.9rem;
     }
-}
+
+    textarea {
+        min-height: 70px;
+        font-size: 1rem;
+    }
+    }
